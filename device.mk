@@ -76,7 +76,7 @@ PRODUCT_PACKAGES += \
 
 # DT2W
 PRODUCT_PACKAGES += \
-    DT2W-Service-Begonia
+    DT2W-Service-Merlin
 
 # Health
 PRODUCT_PACKAGES += \
@@ -110,7 +110,7 @@ PRODUCT_PACKAGES += \
 
 # Light
 PRODUCT_PACKAGES += \
-    android.hardware.light@2.0-service.begonia
+    android.hardware.light@2.0-service.merlin
 
 # Media
 PRODUCT_COPY_FILES += \
@@ -186,26 +186,12 @@ PRODUCT_COPY_FILES += \
 
 # Ramdisk
 PRODUCT_PACKAGES += \
-    capture.sh \
-    capture_headsetmic.sh \
-    playback.sh \
-    playback_headset.sh \
-    setup_headset2rcv.sh \
-    setup_headsetmic2headphone.sh \
-    setup_mainmic2headphone.sh \
-    setup_topmic2headphone.sh \
-    teardown_loopback.sh \
-    tp_data_collect.sh \
-    tp_selftest.sh \
-    factory_init.connectivity.rc \
-    factory_init.project.rc \
-    factory_init.rc \
     init.aee.rc \
     init.ago.rc \
     init.connectivity.rc \
     init.modem.rc \
-    init.mt6785.rc \
-    init.mt6785.usb.rc \
+    init.mt6768.rc \
+    init.mt6768.usb.rc \
     init.project.rc \
     init.sensor_1_0.rc \
     meta_init.connectivity.rc \
@@ -213,9 +199,8 @@ PRODUCT_PACKAGES += \
     meta_init.project.rc \
     meta_init.rc \
     multi_init.rc \
-    fstab.enableswap \
-    fstab.mt6785 \
-    ueventd.mtk.rc
+    fstab.mt6768 \
+    ueventd.qcom.rc 
 
 # RenderScript
 PRODUCT_PACKAGES += \
@@ -238,14 +223,14 @@ PRODUCT_PACKAGES += \
 PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/configs/sensors/hals.conf:$(TARGET_COPY_OUT_VENDOR)/etc/sensors/hals.conf
 
-PRODUCT_BOOT_JARS += \
-    mediatek-common \
-    mediatek-framework \
-    mediatek-ims-base \
-    mediatek-ims-common \
-    mediatek-telecom-common \
-    mediatek-telephony-base \
-    mediatek-telephony-common
+#PRODUCT_BOOT_JARS += \
+#    mediatek-common \
+#    mediatek-framework \
+#    mediatek-ims-base \
+#    mediatek-ims-common \
+#    mediatek-telecom-common \
+#    mediatek-telephony-base \
+#    mediatek-telephony-common
 
 # Thermal
 PRODUCT_PACKAGES += \
@@ -269,13 +254,13 @@ PRODUCT_COPY_FILES += \
 
 # NFC
 PRODUCT_COPY_FILES += \
-    frameworks/native/data/etc/android.hardware.nfc.xml:$(TARGET_COPY_OUT_ODM)/etc/permissions/sku_begonia/android.hardware.nfc.xml \
-    frameworks/native/data/etc/android.hardware.nfc.ese.xml:$(TARGET_COPY_OUT_ODM)/etc/permissions/sku_begonia/android.hardware.nfc.ese.xml \
-    frameworks/native/data/etc/android.hardware.nfc.hce.xml:$(TARGET_COPY_OUT_ODM)/etc/permissions/sku_begonia/android.hardware.nfc.hce.xml \
-    frameworks/native/data/etc/android.hardware.nfc.hcef.xml:$(TARGET_COPY_OUT_ODM)/etc/permissions/sku_begonia/android.hardware.nfc.hcef.xml \
-    frameworks/native/data/etc/android.hardware.nfc.uicc.xml:$(TARGET_COPY_OUT_ODM)/etc/permissions/sku_begonia/android.hardware.nfc.uicc.xml \
-    frameworks/native/data/etc/com.android.nfc_extras.xml:$(TARGET_COPY_OUT_ODM)/etc/permissions/sku_begonia/com.android.nfc_extras.xml \
-    frameworks/native/data/etc/com.nxp.mifare.xml:$(TARGET_COPY_OUT_ODM)/etc/permissions/sku_begonia/com.nxp.mifare.xml
+    frameworks/native/data/etc/android.hardware.nfc.xml:$(TARGET_COPY_OUT_ODM)/etc/permissions/sku_merlin/android.hardware.nfc.xml \
+    frameworks/native/data/etc/android.hardware.nfc.ese.xml:$(TARGET_COPY_OUT_ODM)/etc/permissions/sku_merlin/android.hardware.nfc.ese.xml \
+    frameworks/native/data/etc/android.hardware.nfc.hce.xml:$(TARGET_COPY_OUT_ODM)/etc/permissions/sku_merlin/android.hardware.nfc.hce.xml \
+    frameworks/native/data/etc/android.hardware.nfc.hcef.xml:$(TARGET_COPY_OUT_ODM)/etc/permissions/sku_merlin/android.hardware.nfc.hcef.xml \
+    frameworks/native/data/etc/android.hardware.nfc.uicc.xml:$(TARGET_COPY_OUT_ODM)/etc/permissions/sku_merlin/android.hardware.nfc.uicc.xml \
+    frameworks/native/data/etc/com.android.nfc_extras.xml:$(TARGET_COPY_OUT_ODM)/etc/permissions/sku_merlin/com.android.nfc_extras.xml \
+    frameworks/native/data/etc/com.nxp.mifare.xml:$(TARGET_COPY_OUT_ODM)/etc/permissions/sku_merlin/com.nxp.mifare.xml
 
 PRODUCT_PACKAGES += \
     android.hardware.nfc@1.1-service \
@@ -307,4 +292,4 @@ PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/nfc/sn100u_pnx_sst.pnscr:$(TARGET_COPY_OUT_VENDOR)/etc/sn100u_pnx_sst.pnscr
 
 # Inherit vendor
-$(call inherit-product, vendor/redmi/begonia/begonia-vendor.mk)
+$(call inherit-product, vendor/xiaomi/merlin/merlin-vendor.mk)

@@ -1,0 +1,6 @@
+[
+  {
+    "repository" : "vendor_xiaomi_merlin",
+    "target_path": "vendor/xiaomi/merlin"
+  }
+]

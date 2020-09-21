@@ -13,12 +13,6 @@ import /vendor/etc/init/trustonic.rc
 import ${ro.vendor.rc}meta_init.connectivity.rc
 import /vendor/etc/init/hw/meta_init.project.rc
 import /vendor/etc/init/microtrust.rc
-#microtrust add start
-import /system/etc/init/android.hidl.allocator@1.0-service.rc
-import /vendor/etc/init/vendor.microtrust.hardware.capi@2.0-service.rc
-import /vendor/etc/init/vendor.microtrust.hardware.thh@2.0-service.rc
-import /vendor/etc/init/microtrust.init_thh.rc
-#microtrust add end
 #copy from system/etc for APEX
 import /system/etc/init/apexd.rc
 import /system/etc/init/art_apex_boot_integrity.rc
@@ -27,11 +21,19 @@ import /system/etc/init/vold.rc
 import /system/etc/init/servicemanager.rc
 import /system/etc/init/hwservicemanager.rc
 import /system/etc/init/android.hidl.allocator@1.0-service.rc
-
+import /vendor/etc/init/vendor.microtrust.hardware.capi@2.0-service.rc
+import /vendor/etc/init/android.hardware.keymaster@4.0-service.beanpod.rc
+import /vendor/etc/init/microtrust.bp_kmsetkey_ca.rc
+import /vendor/etc/init/vendor.microtrust.hardware.thh@2.0-service.rc
+import /vendor/etc/init/microtrust.init_thh.rc
+##microtrust end
 #Make sure meta_init.modem.rc is the last rc file.
 import ${ro.vendor.rc}meta_init.modem.rc
 
+
 on early-init
+    write /proc/bootprof "INIT:early-init"
+
     # Set init and its forked children's oom_adj.
     write /proc/1/oom_score_adj -1000
 
@@ -45,6 +47,8 @@ on early-init
     restorecon /postinstall
 
     start ueventd
+
+
     # Run apexd-bootstrap so that APEXes that provide critical libraries
     # become available. Note that this is executed as exec_start to ensure that
     # the libraries are available to the processes started after this statement.
@@ -56,6 +60,8 @@ on early-init
 #INTERNAL_END
 
 on init
+    write /proc/bootprof "INIT:init"
+
     sysclktz 0
 
     start servicemanager
@@ -189,15 +195,7 @@ on init
     write /proc/sys/net/ipv4/tcp_fwmark_accept 1
 
 #INTERNAL_START
-    mkdir /mnt/vendor/protect_f 0771 system system
-    mkdir /mnt/vendor/protect_s 0771 system system
     symlink /sdcard /mnt/sdcard
-    #Create nvdata mount point
-    mkdir /mnt/vendor/nvdata 0771 system system
-    mkdir /mnt/vendor/nvcfg 0771 system system
-
-    #Create CIP mount point
-    mkdir /custom
 
     mkdir /mnt/cd-rom 0000 system system
 #INTERNAL_END
@@ -236,6 +234,8 @@ on firmware_mounts_complete
 
 # Mount filesystems and start core system services.
 on late-init
+    write /proc/bootprof "INIT:late-init"
+
     trigger early-fs
 
     # Mount fstab in init.{$device}.rc by mount_all command. Optional parameter
@@ -304,19 +304,17 @@ on fs
     write /proc/bootprof "INIT:Mount_START"
     wait_for_prop hwservicemanager.ready "true"
     start vendor.boot-hal-1-0
-    mount_all /vendor/etc/fstab.mt6785 ${ro.vendor.rc}multi_init.rc
+    mount_all /vendor/etc/fstab.mt6768 ${ro.vendor.rc}multi_init.rc
     write /proc/bootprof "INIT:Mount_END"
 #INTERNAL_END
 
 on post-fs
+    write /proc/bootprof "INIT:post-fs"
     start logd
     start keyinstall-1-0
     start light-hal-2-0
     start vendor.boot-hal-1-0
     start merged_hal_service
-    #microtrust add start
-    start capi-2-0
-    #microtrust add end
     # Once everything is setup, no need to modify /.
     # The bind+ro combination avoids modifying any other mount flags.
     # mount rootfs rootfs / remount bind ro
@@ -429,6 +427,8 @@ on zygote-start && property:ro.crypto.state=encrypted && property:ro.crypto.type
     start zygote_secondary
 
 on boot
+    write /proc/bootprof "INIT:boot"
+
     # For backlight
     chmod 0664 /sys/class/leds/lcd-backlight/brightness
     chown system system /sys/class/leds/lcd-backlight/brightness
@@ -501,8 +501,13 @@ on defaultcrypto
 # mtk modification:
 #   To speed up the booting in meta/factory mode, we don't encrypt the device.
 #   And then handle it as 'unencrypted' state.
-on encrypt
+on encrypt && property:ro.vendor.mtk_f2fs_enable=0
     mount ext4 /dev/block/platform/bootdevice/by-name/userdata /data noatime nosuid nodev noauto_da_alloc discard wait
+
+on encrypt && property:ro.vendor.mtk_f2fs_enable=1
+    mount f2fs /dev/block/platform/bootdevice/by-name/userdata /data noatime nosuid nodev discard wait
+
+on encrypt
     setprop vendor.crypto.fake_encrypt 1
     setprop vold.post_fs_data_done 0
     trigger post-fs-data
@@ -565,17 +570,13 @@ service loghidlsysservice /system/bin/loghidlsysservice
 
 service meta_tst /vendor/bin/meta_tst
     group radio system wifi audio bluetooth media gps
+    user radio system wifi
 
 service nvram_daemon /vendor/bin/nvram_daemon
     class main
     user root
     group system
     oneshot
-
-service connsyslogger /system/bin/connsyslogger
-    class main
-    user shell
-    group system shell radio sdcard_rw inet sdcard_r media_rw bluetooth gps wifi
 
 service wlan_assistant /vendor/bin/wlan_assistant
     class main

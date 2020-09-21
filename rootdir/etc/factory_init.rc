@@ -8,21 +8,24 @@ import ${ro.vendor.rc}factory_init.connectivity.rc
 import /init.environ.rc
 import /vendor/etc/init/trustonic.rc
 import ${ro.vendor.rc}init.nvdata.rc
+##microtrust start
 import /vendor/etc/init/microtrust.rc
-#microtrust add start
 import /system/etc/init/android.hidl.allocator@1.0-service.rc
 import /vendor/etc/init/vendor.microtrust.hardware.capi@2.0-service.rc
+import /vendor/etc/init/android.hardware.keymaster@4.0-service.beanpod.rc
+import /vendor/etc/init/microtrust.bp_kmsetkey_ca.rc
 import /vendor/etc/init/vendor.microtrust.hardware.thh@2.0-service.rc
-import /vendor/etc/init/microtrust.init_thh.rc
-#microtrust add end
+##microtrust end
 import /vendor/etc/init/hw/init.aee.rc
 import /system/etc/init/hw/init.aee.rc
 import /system/etc/init/update_verifier.rc
 import /vendor/etc/init/android.hardware.boot@1.0-service.rc
 import /vendor/etc/init/vendor.mediatek.hardware.mtkpower@1.0-service.rc
+
 #copy from system/etc for APEX
 import /system/etc/init/apexd.rc
 import /system/etc/init/art_apex_boot_integrity.rc
+
 import /vendor/etc/init/hw/factory_init.project.rc
 import /system/etc/init/servicemanager.rc
 import /system/etc/init/hwservicemanager.rc
@@ -43,6 +46,8 @@ on early-init
     restorecon /postinstall
 
     start ueventd
+
+
     # Run apexd-bootstrap so that APEXes that provide critical libraries
     # become available. Note that this is executed as exec_start to ensure that
     # the libraries are available to the processes started after this statement.
@@ -293,7 +298,7 @@ on fs
     write /proc/bootprof "INIT:Mount_START"
     wait_for_prop hwservicemanager.ready "true"
     start vendor.boot-hal-1-0
-    mount_all /vendor/etc/fstab.mt6785 ${ro.vendor.rc}multi_init.rc
+    mount_all /vendor/etc/fstab.mt6768 ${ro.vendor.rc}multi_init.rc
     write /proc/bootprof "INIT:Mount_END"
 #INTERNAL_END
 # mount different fs end
@@ -382,8 +387,8 @@ on late-fs
 on post-fs-data
     write /proc/bootprof "INIT:post-fs-data"
 
-    #Thermal
-    mkdir /data/.tp/ 0775 system system
+	#Thermal
+	mkdir /data/.tp/ 0775 system system
 
     # symlink to bugreport storage location
     rm /data/bugreports
@@ -535,9 +540,6 @@ on boot
     chmod 0664 /sys/class/leds/lcd-backlight/brightness
     chown system system /sys/class/leds/lcd-backlight/brightness
 
-    # power manager
-    write /sys/power/pm_freeze_timeout 2000
-
 # basic network init
     ifup lo
     hostname localhost
@@ -603,8 +605,13 @@ on defaultcrypto
 # mtk modification:
 #   To speed up the booting in meta/factory mode, we don't encrypt the device.
 #   And then handle it as 'unencrypted' state.
-on encrypt
+on encrypt && property:ro.vendor.mtk_f2fs_enable=0
     mount ext4 /dev/block/platform/bootdevice/by-name/userdata /data noatime nosuid nodev noauto_da_alloc discard wait
+
+on encrypt && property:ro.vendor.mtk_f2fs_enable=1
+    mount f2fs /dev/block/platform/bootdevice/by-name/userdata /data noatime nosuid nodev discard wait
+
+on encrypt
     setprop vendor.crypto.fake_encrypt 1
     setprop vold.post_fs_data_done 0
     trigger post-fs-data
@@ -659,12 +666,23 @@ service thermal_manager /vendor/bin/thermal_manager
 	group system
     oneshot
 
+
 service vendor.ccci_fsd /vendor/bin/ccci_fsd 0
     user radio
     group radio system
     oneshot
 
 service ccci_mdinit /vendor/bin/ccci_mdinit 0
+    user system
+    group radio system
+    oneshot
+
+service ccci3_fsd /vendor/bin/ccci_fsd 2
+    user radio
+    group radio system
+    oneshot
+
+service ccci3_mdinit /vendor/bin/ccci_mdinit 2
     user system
     group radio system
     oneshot
@@ -705,9 +723,8 @@ service dualmdlogger /system/bin/dualmdlogger
     oneshot
 
 service factory_no_image /vendor/bin/factory
-    user root
-    group radio system wifi media gps audio bluetooth wakelock
-    capabilities BLOCK_SUSPEND NET_RAW NET_ADMIN SYS_ADMIN SYS_BOOT
+    group radio system media bluetooth gps audio wifi
+    user radio system wifi media
 
 service emdlogger1 /system/bin/emdlogger1
     class main
