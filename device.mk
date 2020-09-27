@@ -8,6 +8,7 @@
 $(call inherit-product, frameworks/native/build/phone-xhdpi-6144-dalvik-heap.mk)
 
 # Product
+PRODUCT_TARGET_VNDK_VERSION := 29
 PRODUCT_SHIPPING_API_LEVEL := 29
 PRODUCT_USE_DYNAMIC_PARTITIONS := true
 PRODUCT_BUILD_SUPER_PARTITION := false
