@@ -15,7 +15,11 @@
 #
 
 DEVICE_PATH := device/xiaomi/merlin
-
+BOARD_KERNEL_IMAGE_NAME := Image.gz-dtb
+TARGET_KERNEL_ARCH := arm64
+TARGET_KERNEL_HEADER_ARCH := arm64
+TARGET_KERNEL_SOURCE := device/xiaomi/merlin/prebuilt/
+TARG
 # Architecture
 TARGET_ARCH := arm64
 TARGET_ARCH_VARIANT := armv8-a
