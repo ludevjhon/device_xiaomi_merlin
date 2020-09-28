@@ -15,4 +15,4 @@
 #
 
 PRODUCT_MAKEFILES := \
-    $(LOCAL_DIR)/havoc_merlin.mk
+    $(LOCAL_DIR)/bootleg_merlin.mk
