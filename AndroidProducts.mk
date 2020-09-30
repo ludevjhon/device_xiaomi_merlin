@@ -15,4 +15,4 @@
 #
 
 PRODUCT_MAKEFILES := \
-    $(LOCAL_DIR)/_merlin.mk
+    $(LOCAL_DIR)/lineage_merlin.mk
