@@ -162,7 +162,7 @@ BOARD_VNDK_RUNTIME_DISABLE := true
 #include device/mediatek/sepolicy/sepolicy.mk
 BOARD_SEPOLICY_DIRS += $(DEVICE_PATH)/sepolicy/vendor
 BOARD_PLAT_PUBLIC_SEPOLICY_DIR += $(DEVICE_PATH)/sepolicy/public
-BOARD
+
 
 # Inherit from the proprietary version
 -include vendor/xiaomi/merlin/BoardConfigVendor.mk
