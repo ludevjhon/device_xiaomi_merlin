@@ -26,11 +26,11 @@ $(call inherit-product, $(SRC_TARGET_DIR)/product/full_base_telephony.mk)
 $(call inherit-product, device/xiaomi/merlin/device.mk)
 
 # Inherit from our custom product configuration
-$(call inherit-product, vendor/bootleggers/config/common_full_phone.mk)
+$(call inherit-product, vendor/revengeos/config/common_full_phone.mk)
 
 ## Device identifier. This must come after all inclusions
 PRODUCT_DEVICE := merlin
-PRODUCT_NAME := bootleg_merlin
+PRODUCT_NAME := revengeos_merlin
 PRODUCT_BRAND := Redmi
 PRODUCT_MODEL := Redmi Note 9
 PRODUCT_MANUFACTURER := Xiaomi
